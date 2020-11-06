@@ -1,0 +1,42 @@
+ type Query {
+        greeting(name: String): String!
+        users(query: String):[User!]!
+        getMyProfileData: User!
+        post(query: String):[Post!]!
+        comments: [Comment!]!
+    }
+
+    type User{
+        id: ID!
+        name: String!
+        email: String!
+        age: Int
+        posts:[Post!]!
+        comments: [Comment!]!
+    }
+
+    type Post{
+        id:ID!
+        title:String!
+        body:String!
+        published:Boolean!
+        author: User!
+        comments: [Comment!]!
+    }
+
+    type Comment{
+        id:ID!
+        body:String!
+        author: User!
+        post: Post!
+    }
+
+    type Mutation{
+        createNewUser(name: String!, email: String!, age: Int): User!
+        deleteUser(id: ID!): User!
+        updateUser(id: ID!, name: String, email: String, age: Int): User!
+        createPost(title: String!, body: String!, published: Boolean!, author: ID!): Post!
+        updatePost(id: ID!,title: String!, body: String!, published: Boolean!, author: ID!): Post!
+        createComment(body: String!,author: ID!, post: ID!): Comment!
+        updateComment(id: ID!, body: String!,author: ID!, post: ID!): Comment!
+    }
