@@ -128,7 +128,7 @@ const Mutation = {
         }
 
         pubsub.publish('post', {
-            user: {
+            post: {
                 mutation: 'UPDATED',
                 data: post
             }

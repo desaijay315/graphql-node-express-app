@@ -34,6 +34,7 @@
     type Subscription {
         post: PostSubscriptionPayload!
         user: UserSubscriptionPayload!
+        comment: CommentSubscriptionPayload!
     }
 
     type PostSubscriptionPayload {
@@ -44,6 +45,11 @@
     type UserSubscriptionPayload{
         mutation: String!
         data: User!
+    }
+
+    type CommentSubscriptionPayload{
+        mutation: String!
+        data: Comment!
     }
 
     type Mutation{
