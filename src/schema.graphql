@@ -31,9 +31,25 @@
         post: Post!
     }
 
+    type Subscription {
+        post: PostSubscriptionPayload!
+        user: UserSubscriptionPayload!
+    }
+
+    type PostSubscriptionPayload {
+        mutation: String!
+        data: Post!
+    }
+
+    type UserSubscriptionPayload{
+        mutation: String!
+        data: User!
+    }
+
     type Mutation{
         createNewUser(name: String!, email: String!, age: Int): User!
         deleteUser(id: ID!): User!
+        deletePost(id: ID!): Post!
         updateUser(id: ID!, name: String, email: String, age: Int): User!
         createPost(title: String!, body: String!, published: Boolean!, author: ID!): Post!
         updatePost(id: ID!,title: String!, body: String!, published: Boolean!, author: ID!): Post!

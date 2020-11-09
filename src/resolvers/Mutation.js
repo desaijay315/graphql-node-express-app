@@ -1,7 +1,8 @@
 const { v4 } = require('uuid');
 
+
 const Mutation = {
-    createNewUser(parent, args, { data }, info) {
+    createNewUser(parent, args, { data, pubsub }, info) {
         const isEmailExists = data.users.some((user) => user.email === args.email)
         if (isEmailExists) {
             throw new Error('Email already Taken')
@@ -13,11 +14,19 @@ const Mutation = {
             email: args.email,
             age: args.age
         }
-        data.users.push(user)
+
+        pubsub.publish('user', {
+            user: {
+                mutation: 'CREATED',
+                data: user
+            }
+        })
+
+        data.users.push(user);
 
         return user
     },
-    updateUser(parent, args, { data }, info) {
+    updateUser(parent, args, { data, pubsub }, info) {
         const user = data.users.find((user) => user.id === args.id)
         if (!user) {
             throw new Error('User does not exist!')
@@ -39,9 +48,16 @@ const Mutation = {
             user.age = args.age
         }
 
+        pubsub.publish('user', {
+            user: {
+                mutation: 'UPDATED',
+                data: user
+            }
+        })
+
         return user
     },
-    deleteUser(parent, args, { data }, info) {
+    deleteUser(parent, args, { data, pubsub }, info) {
         const isUserExists = data.users.findIndex((user) => user.id === args.author)
 
         if (!isUserExists) {
@@ -51,7 +67,7 @@ const Mutation = {
         const userdeleted = data.users.splice(isUserExists, 1)
         return userdeleted[0]
     },
-    createPost(parent, args, { data }, info) {
+    createPost(parent, args, { data, pubsub }, info) {
         const userExists = data.users.some((user) => user.id === args.author)
 
         if (!userExists) {
@@ -67,12 +83,19 @@ const Mutation = {
             author: args.author
         }
 
+        pubsub.publish('post', {
+            post: {
+                mutation: 'CREATED',
+                data: post
+            }
+        })
+
 
         data.posts.push(post)
         return post
 
     },
-    updatePost(parent, args, { data }, info) {
+    updatePost(parent, args, { data, pubsub }, info) {
         //posts exists
         const post = data.posts.find((post) => post.id === args.id)
 
@@ -98,6 +121,13 @@ const Mutation = {
         if (typeof args.published === 'boolean') {
             post.age = args.published
         }
+
+        pubsub.publish('post', {
+            user: {
+                mutation: 'UPDATED',
+                data: user
+            }
+        })
 
         return post
 
@@ -130,7 +160,29 @@ const Mutation = {
         data.comments.push(comment);
         return comment
 
-    }
+    },
+    deletePost(parent, args, { data, pubsub }, info) {
+        const isPostExists = data.posts.findIndex((post) => post.id === args.id)
+        if (isPostExists === -1) {
+            throw new Error('Post does not exist!')
+        }
+        //splice will return the index of the removed items from the array object
+        const [post] = data.posts.splice(isPostExists, 1)
+
+        data.comments = data.comments.filter((comment) => comment.post !== args.id)
+
+        if (post.published) {
+            pubsub.publish('post', {
+                post: {
+                    mutation: 'DELETED',
+                    data: post
+                }
+            })
+        }
+        console.log(post)
+
+        return post
+    },
 }
 
 export default Mutation;

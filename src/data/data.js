@@ -37,6 +37,13 @@ const posts = [{
     body: 'blog body 3',
     published: true,
     author: '5678'
+},
+{
+    id: '111',
+    title: 'blog 3',
+    body: 'blog body 3',
+    published: true,
+    author: '5678'
 }];
 
 // comments on the posts
