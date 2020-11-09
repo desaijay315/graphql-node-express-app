@@ -20,10 +20,9 @@ const Mutation = {
                 mutation: 'CREATED',
                 data: user
             }
-        })
+        });
 
         data.users.push(user);
-
         return user
     },
     updateUser(parent, args, { data, pubsub }, info) {
@@ -64,7 +63,14 @@ const Mutation = {
             throw new Error('User does not exist!')
         }
         //splice will return the removed items from the array object
-        const userdeleted = data.users.splice(isUserExists, 1)
+        const userdeleted = data.users.splice(isUserExists, 1);
+
+        pubsub.publish('user', {
+            user: {
+                mutation: 'CREATED',
+                data: user
+            }
+        });
         return userdeleted[0]
     },
     createPost(parent, args, { data, pubsub }, info) {
@@ -88,8 +94,7 @@ const Mutation = {
                 mutation: 'CREATED',
                 data: post
             }
-        })
-
+        });
 
         data.posts.push(post)
         return post
@@ -125,9 +130,9 @@ const Mutation = {
         pubsub.publish('post', {
             user: {
                 mutation: 'UPDATED',
-                data: user
+                data: post
             }
-        })
+        });
 
         return post
 
@@ -156,6 +161,12 @@ const Mutation = {
             post: args.post
         }
 
+        pubsub.publish('comment', {
+            comment: {
+                mutation: 'CREATED',
+                data: comment
+            }
+        });
 
         data.comments.push(comment);
         return comment
@@ -179,7 +190,6 @@ const Mutation = {
                 }
             })
         }
-        console.log(post)
 
         return post
     },
