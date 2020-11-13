@@ -1,7 +1,26 @@
-import { GraphQLServer, PubSub } from 'graphql-yoga';
+import { GraphQLServer } from 'graphql-yoga';
 
 //creating a new instance of pubsub
-const pubsub = new PubSub();
+// const pubsub = new PubSub();
+
+//import redis pubsub from graphql
+import { RedisPubSub } from 'graphql-redis-subscriptions';
+import Redis from 'ioredis';
+
+
+const options = {
+    host: process.env.REDIS_HOST || '127.0.0.1',
+    port: process.env.REDIS_PORT ? process.env.REDIS_PORT : '6379',
+    retryStrategy: times => {
+        // reconnect after
+        return Math.min(times * 50, 2000);
+    }
+};
+
+const pubsub = new RedisPubSub({
+    publisher: new Redis(options),
+    subscriber: new Redis(options)
+});
 
 
 import data from './data/data';
@@ -29,12 +48,12 @@ const server = new GraphQLServer({
 });
 
 
-const options = {
+const opt = {
     port: 8005
 }
 
-server.start(options, ({ port }) =>
+server.start(opt, ({ port }) =>
     console.log(
         `Server started, listening on port ${port} for incoming requests.`,
     ),
-)
+);
